@@ -1,24 +1,39 @@
 import { useState } from "react";
 
-const CATEGORIES = [
-  { id: "frukost", label: "Frukost" },
-  { id: "lunch", label: "Lunch" },
-  { id: "middag", label: "Middag" },
-  { id: "dessert", label: "Dessert" },
-  { id: "soppa", label: "Soppa" },
-  { id: "pasta", label: "Pasta" },
-  { id: "kyckling", label: "Kyckling" },
-  { id: "nöt", label: "Nötkött" },
-  { id: "fisk", label: "Fisk" },
-  { id: "skaldjur", label: "Skaldjur" },
-  { id: "veg", label: "Vegetariskt" },
-  { id: "vegansk", label: "Veganskt" },
-  { id: "asiatiskt", label: "Asiatiskt" },
-  { id: "italienskt", label: "Italienskt" },
+const API_CATEGORIES = [
+  { id: "Beef", label: "Beef" },
+  { id: "Breakfast", label: "Breakfast" },
+  { id: "Chicken", label: "Chicken" },
+  { id: "Dessert", label: "Dessert" },
+  { id: "Goat", label: "Goat" },
+  { id: "Lamb", label: "Lamb" },
+  { id: "Pasta", label: "Pasta" },
+  { id: "Pork", label: "Pork" },
+  { id: "Seafood", label: "Seafood" },
+  { id: "Side", label: "Side" },
+  { id: "Starter", label: "Starter" },
+  { id: "Vegan", label: "Vegan" },
+  { id: "Vegetarian", label: "Vegetarian" },
 ];
 
-export default function FilterPanel() {
+export default function FilterPanel({ onApply }) {
   const [open, setOpen] = useState(true);
+  const [selected, setSelected] = useState([]);
+
+  const toggle = (id) => {
+    setSelected((prev) =>
+      prev.includes(id) ? prev.filter((c) => c !== id) : [...prev, id]
+    );
+  };
+
+  const handleApply = () => {
+    onApply(selected); // pass selected list up to parent
+  };
+
+  const handleClear = () => {
+    setSelected([]);
+    onApply([]); // reset
+  };
 
   return (
     <aside className="w-full flex-1 flex flex-col">
@@ -29,7 +44,7 @@ export default function FilterPanel() {
             <p className="text-xs text-gray-500">Välj kategorier</p>
           </div>
           <button
-            onClick={() => setOpen(o => !o)}
+            onClick={() => setOpen((o) => !o)}
             className="text-sm px-3 py-1.5 rounded-lg border hover:bg-white"
           >
             {open ? "Dölj" : "Visa"}
@@ -39,22 +54,34 @@ export default function FilterPanel() {
         {open && (
           <div className="flex-1 overflow-y-auto p-4">
             <div className="grid grid-cols-2 gap-2">
-              {CATEGORIES.map(cat => (
+              {API_CATEGORIES.map((cat) => (
                 <label
                   key={cat.id}
-                  className="flex items-center gap-2 rounded-xl border px-3 py-2 text-sm hover:bg-gray-50 cursor-pointer"
+                  className={`flex items-center gap-2 rounded-xl border px-3 py-2 text-sm cursor-pointer ${
+                    selected.includes(cat.id) ? "bg-gray-100 border-gray-400" : "hover:bg-gray-50"
+                  }`}
                 >
-                  <input type="checkbox" className="rounded border-gray-300" disabled />
+                  <input
+                    type="checkbox"
+                    checked={selected.includes(cat.id)}
+                    onChange={() => toggle(cat.id)}
+                  />
                   <span>{cat.label}</span>
                 </label>
               ))}
             </div>
 
             <div className="mt-4 flex gap-2">
-              <button className="flex-1 px-3 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium" disabled>
+              <button
+                onClick={handleApply}
+                className="flex-1 px-3 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium"
+              >
                 Tillämpa
               </button>
-              <button className="flex-1 px-3 py-2 rounded-xl border text-sm font-medium" disabled>
+              <button
+                onClick={handleClear}
+                className="flex-1 px-3 py-2 rounded-xl border text-sm font-medium"
+              >
                 Rensa
               </button>
             </div>

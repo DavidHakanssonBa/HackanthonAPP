@@ -1,7 +1,26 @@
 // Minimal klient mot TheMealDB
 export async function getRandomMeal() {
-  const r = await fetch('https://www.themealdb.com/api/json/v1/1/random.php');
-  if (!r.ok) throw new Error('Failed fetching meal');
+  const r = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");
+  if (!r.ok) throw new Error("Failed fetching meal");
+  const data = await r.json();
+  return data.meals?.[0] ?? null;
+}
+
+
+export async function getMealsByCategory(category) {
+  const r = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/filter.php?c=${encodeURIComponent(category)}`
+  );
+  if (!r.ok) throw new Error("Failed fetching meals for " + category);
+  const data = await r.json();
+  return data.meals ?? [];
+}
+
+export async function getMealById(id) {
+  const r = await fetch(
+    `https://www.themealdb.com/api/json/v1/1/lookup.php?i=${encodeURIComponent(id)}`
+  );
+  if (!r.ok) throw new Error("Failed fetching meal id=" + id);
   const data = await r.json();
   return data.meals?.[0] ?? null;
 }
@@ -10,10 +29,10 @@ export async function getRandomMeal() {
 export function parseIngredients(meal) {
   const items = [];
   for (let i = 1; i <= 20; i++) {
-    const ing = meal[`strIngredient${i}`];   // <-- VIKTIGT: backticks + bracket-notation
+    const ing = meal[`strIngredient${i}`]; // <-- bracket-notation
     const measure = meal[`strMeasure${i}`];
     if (ing && ing.trim()) {
-      items.push({ ingredient: ing.trim(), measure: (measure || '').trim() });
+      items.push({ ingredient: ing.trim(), measure: (measure || "").trim() });
     }
   }
   return items;
