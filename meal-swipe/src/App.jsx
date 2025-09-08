@@ -1,6 +1,11 @@
+// App.jsx
 import { useEffect, useState } from 'react';
 import { getRandomMeal } from './meal';
 import MealCard from './MealCard';
+import { ensureAnonAuth } from './firebase';
+import { likeMealFull } from './likes';
+import ThisWeekPanel from "./ThisWeekPanel";
+
 
 export default function App() {
   const [meal, setMeal] = useState(null);
@@ -20,11 +25,27 @@ export default function App() {
     }
   }
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    // se till att vi har en anonym användare, sen ladda första receptet
+    ensureAnonAuth().then(load).catch(e => setErr(String(e)));
+  }, []);
+
+  async function handleLike() {
+    try {
+      if (meal) await likeMealFull(meal);
+    } catch (e) {
+      console.error(e);
+      setErr(String(e));
+    } finally {
+      // ladda nästa kort oavsett (kan justera enligt UX)
+      load();
+    }
+  }
 
   if (loading) {
     return (
       <div className="min-h-screen grid place-items-center text-gray-600">
+        Laddar slumpad rätt…
       </div>
     );
   }
@@ -45,13 +66,14 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      
       <main className="max-w-3xl mx-auto p-4">
         <MealCard
           meal={meal}
-          onDislike={load}     // Dislike: hämta ny rätt
-          onLike={load}
+          onDislike={load}
+          onLike={handleLike}
         />
+        <ThisWeekPanel />
+
       </main>
     </div>
   );
