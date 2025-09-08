@@ -6,11 +6,11 @@ export async function getRandomMeal() {
   return data.meals?.[0] ?? null;
 }
 
-// Plocka ut [ {ingredient, measure}, ... ] från strIngredient1..20
+// Plocka ut [{ ingredient, measure }, ...] från strIngredient1..20
 export function parseIngredients(meal) {
   const items = [];
   for (let i = 1; i <= 20; i++) {
-    const ing = meal[`strIngredient${i}`];
+    const ing = meal[`strIngredient${i}`];   // <-- VIKTIGT: backticks + bracket-notation
     const measure = meal[`strMeasure${i}`];
     if (ing && ing.trim()) {
       items.push({ ingredient: ing.trim(), measure: (measure || '').trim() });

@@ -1,8 +1,8 @@
+/* Tailwind v4 */
 @import "tailwindcss";
-/* 3D-flip helpers */
-.scene { perspective: 1200px; }
-.flip-card { transform-style: preserve-3d; transition: transform 600ms; }
-.flip-card.is-flipped { transform: rotateY(180deg); }
-.flip-face { backface-visibility: hidden; }
-.flip-back { transform: rotateY(180deg); }
 
+/* --- 3D flip helpers (med WebKit-fix) --- */
+.scene {
+  perspective: 1200px;
+  -webkit-perspective: 1200px;
+}
