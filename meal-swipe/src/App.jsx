@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
-import { getRandomMeal, parseIngredients } from './meal';
+import { getRandomMeal } from './meal';
+import MealCard from './MealCard';
 
 export default function App() {
   const [meal, setMeal] = useState(null);
@@ -24,7 +25,6 @@ export default function App() {
   if (loading) {
     return (
       <div className="min-h-screen grid place-items-center text-gray-600">
-        Laddar slumpad rätt…
       </div>
     );
   }
@@ -43,72 +43,16 @@ export default function App() {
     );
   }
 
-  const ingredients = parseIngredients(meal);
-
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="sticky top-0 bg-white border-b">
-        <div className="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between">
-          <h1 className="font-bold text-xl">MealSwipe MVP</h1>
-          <button onClick={load} className="px-3 py-1.5 rounded-lg border hover:bg-gray-100">
-            Ny slumpad rätt
-          </button>
-        </div>
-      </header>
+      
 
       <main className="max-w-3xl mx-auto p-4">
-        <article className="bg-white rounded-2xl shadow overflow-hidden">
-          <div className="aspect-[16/9] w-full bg-gray-200">
-            <img
-              src={meal.strMealThumb}
-              alt={meal.strMeal}
-              className="w-full h-full object-cover"
-              loading="lazy"
-            />
-          </div>
-
-          <div className="p-5 md:p-6">
-            <h2 className="text-2xl md:text-3xl font-bold">{meal.strMeal}</h2>
-            <p className="mt-1 text-sm text-gray-500">
-              {meal.strArea ? `${meal.strArea}` : ''}{meal.strCategory ? ` · ${meal.strCategory}` : ''}
-            </p>
-
-            <h3 className="mt-6 mb-2 text-lg font-semibold">Ingredienser</h3>
-            <ul className="space-y-1">
-              {ingredients.map((it, idx) => (
-                <li key={idx} className="flex items-start gap-2">
-                  <span className="mt-2 h-1.5 w-1.5 rounded-full bg-gray-400"></span>
-                  <span className="text-gray-800">
-                    <span className="font-medium">{it.ingredient}</span>
-                    {it.measure && <span className="text-gray-600"> — {it.measure}</span>}
-                  </span>
-                </li>
-              ))}
-            </ul>
-
-            {/* Valfritt: instruktioner i en kollapsbar sektion */}
-            {meal.strInstructions && (
-              <>
-                <h3 className="mt-6 mb-2 text-lg font-semibold">Instruktioner</h3>
-                <p className="whitespace-pre-line leading-relaxed text-gray-800">
-                  {meal.strInstructions}
-                </p>
-              </>
-            )}
-
-            {/* Valfritt: YouTube-länk */}
-            {meal.strYoutube && (
-              <a
-                className="inline-block mt-6 px-4 py-2 rounded-lg bg-red-600 text-white"
-                href={meal.strYoutube}
-                target="_blank"
-                rel="noreferrer"
-              >
-                Visa på YouTube
-              </a>
-            )}
-          </div>
-        </article>
+        <MealCard
+          meal={meal}
+          onDislike={load}     // Dislike: hämta ny rätt
+          onLike={load}
+        />
       </main>
     </div>
   );
