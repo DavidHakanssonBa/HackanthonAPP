@@ -100,7 +100,7 @@ export default function MealDetailsModal({ open, onClose, meal }) {
                   )}
 
                   {/* Ingredients */}
-                  <h4 className="text-base font-semibold mb-2">Ingredienser</h4>
+                  <h4 className="text-base font-semibold mb-2">Ingredients</h4>
                   <ul className="space-y-1 mb-5">
                     {ingredients.map((it, i) => (
                       <li key={i} className="text-sm text-gray-900">
@@ -113,7 +113,7 @@ export default function MealDetailsModal({ open, onClose, meal }) {
                   {/* Instructions */}
                   {meal?.strInstructions && (
                     <>
-                      <h4 className="text-base font-semibold mb-2">Instruktioner</h4>
+                      <h4 className="text-base font-semibold mb-2">Instructions</h4>
                       <p className="whitespace-pre-line leading-relaxed text-gray-900 text-sm">
                         {meal.strInstructions}
                       </p>
