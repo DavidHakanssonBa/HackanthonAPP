@@ -12,10 +12,10 @@ export default function MealCard({ meal, onDislike, onLike }) {
           "flip-card relative w-full rounded-2xl shadow-xl bg-white " +
           (flipped ? "is-flipped" : "")
         }
-        style={{ minHeight: 620 }}
+        style={{ minHeight: 520 }}
       >
         {/* Front */}
-        <article className="flip-face absolute h-auto rounded-2xl overflow-hidden flex flex-col">
+        <article className="flip-face absolute inset-0 rounded-2xl overflow-hidden flex flex-col">
           <div className="aspect-[4/3] w-full bg-gray-200">
             <img
               src={meal.strMealThumb}
