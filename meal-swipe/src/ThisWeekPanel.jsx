@@ -1,3 +1,4 @@
+// src/ThisWeekPanel.jsx
 import { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import {
@@ -10,10 +11,12 @@ import {
   doc,
 } from "firebase/firestore";
 import ShoppingListModal from "./ShoppingListModal";
+import MealDetailsModal from "./MealDetailsModal"; // ⬅️ NEW
 
 export default function ThisWeekPanel({ className = "" }) {
   const [items, setItems] = useState(null);
   const [open, setOpen] = useState(false);
+  const [detailsMeal, setDetailsMeal] = useState(null); // ⬅️ NEW
   const uid = auth.currentUser?.uid;
 
   useEffect(() => {
@@ -51,25 +54,20 @@ export default function ThisWeekPanel({ className = "" }) {
 
             <div className="flex items-center gap-4">
               {/* Hjärt-ikon + badge */}
-             <div className="relative">
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    fill="currentColor"
-    viewBox="0 0 20 20"
-    className="w-6 h-6 text-red-500"
-  >
-    <path
-      fillRule="evenodd"
-      d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.657l-6.828-6.829a4 4 0 010-5.656z"
-      clipRule="evenodd"
-    />
-  </svg>
-  {likedCount > 0 && (
-    <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
-      {likedCount}
-    </span>
-  )}
-</div>
+              <div className="relative">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" className="w-6 h-6 text-red-500">
+                  <path
+                    fillRule="evenodd"
+                    d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 18.657l-6.828-6.829a4 4 0 010-5.656z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                {likedCount > 0 && (
+                  <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs font-semibold px-1.5 py-0.5 rounded-full">
+                    {likedCount}
+                  </span>
+                )}
+              </div>
 
               {/* Visa inköpslista-knapp */}
               <button
@@ -87,10 +85,7 @@ export default function ThisWeekPanel({ className = "" }) {
             {items === null && (
               <ul className="space-y-2">
                 {Array.from({ length: 8 }).map((_, i) => (
-                  <li
-                    key={i}
-                    className="flex items-center gap-3 p-2 rounded-xl bg-gray-100 animate-pulse"
-                  >
+                  <li key={i} className="flex items-center gap-3 p-2 rounded-xl bg-gray-100 animate-pulse">
                     <div className="w-16 h-12 rounded-md bg-gray-200" />
                     <div className="flex-1 space-y-1">
                       <div className="h-3 w-2/3 bg-gray-200 rounded" />
@@ -116,21 +111,29 @@ export default function ThisWeekPanel({ className = "" }) {
                       key={id}
                       className="flex items-center gap-3 p-2 rounded-xl border bg-white shadow-sm relative"
                     >
+                      {/* Remove */}
                       <button
                         onClick={() => handleRemove(id)}
                         className="absolute top-2 right-2 bg-white/90 hover:bg-red-100 text-red-600 text-xs px-2 py-1 rounded"
+                        title="Ta bort från veckan"
                       >
                         ✕
                       </button>
 
-                      <div className="w-16 h-12 bg-gray-100 overflow-hidden rounded-md shrink-0">
+                      {/* ⬇️ CLICKABLE THUMBNAIL -> opens details modal */}
+                      <button
+                        type="button"
+                        onClick={() => setDetailsMeal(meal)}
+                        className="w-16 h-12 bg-gray-100 overflow-hidden rounded-md shrink-0 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                        title="Visa detaljer"
+                      >
                         <img
                           src={thumb}
                           alt={meal?.strMeal || "Meal"}
                           className="w-full h-full object-cover"
                           loading="lazy"
                         />
-                      </div>
+                      </button>
 
                       <div className="min-w-0 flex-1">
                         <h4 className="text-sm font-semibold leading-snug line-clamp-1">
@@ -151,8 +154,13 @@ export default function ThisWeekPanel({ className = "" }) {
         </div>
       </aside>
 
-      {/* Modal overlay */}
+      {/* Modals */}
       <ShoppingListModal open={open} onClose={() => setOpen(false)} />
+      <MealDetailsModal
+        open={!!detailsMeal}
+        onClose={() => setDetailsMeal(null)}
+        meal={detailsMeal}
+      />
     </>
   );
 }
