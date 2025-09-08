@@ -10,15 +10,15 @@ import {
   doc,
 } from "firebase/firestore";
 
-export default function ThisWeekPanel() {
-  const [items, setItems] = useState(null); // null = loading, [] = empty
+export default function ThisWeekPanel({ className = "" }) {
+  const [items, setItems] = useState(null);
   const uid = auth.currentUser?.uid;
 
   useEffect(() => {
     if (!uid) return;
 
     const colRef = collection(db, "users", uid, "thisWeek");
-    const q5 = query(colRef, orderBy("likedAt", "desc"), limit(5));
+    const q5 = query(colRef, orderBy("likedAt", "desc"), limit(20));
 
     const unsub = onSnapshot(q5, (snap) => {
       const data = snap.docs.map((d) => ({ id: d.id, ...d.data() }));
@@ -28,63 +28,61 @@ export default function ThisWeekPanel() {
     return () => unsub();
   }, [uid]);
 
-  // 🔥 delete function
   const handleRemove = async (id) => {
     if (!uid) return;
     const ref = doc(db, "users", uid, "thisWeek", id);
     await deleteDoc(ref);
-    // no need to call setItems manually, onSnapshot updates automatically
   };
 
   return (
-    <aside className="w-full">
-      <div className="rounded-2xl bg-white shadow-xl border overflow-hidden">
-        <header className="px-5 py-4 border-b bg-gray-50">
+    <aside className={`flex flex-col ${className}`}>
+      <div className="flex-1 flex flex-col rounded-2xl bg-white shadow-xl border overflow-hidden">
+        <header className="px-5 py-4 border-b bg-gray-50 shrink-0">
           <h3 className="text-lg font-semibold">Veckans matplan</h3>
-          <p className="text-xs text-gray-500">Senaste 5 gillade rätter</p>
+          <p className="text-xs text-gray-500">Senaste gillade rätter</p>
         </header>
 
-        <div className="p-4">
-          {/* Loading skeleton */}
+        <div className="flex-1 overflow-y-auto p-3">
           {items === null && (
-            <div className="grid grid-cols-1 gap-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div
+            <ul className="space-y-2">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <li
                   key={i}
-                  className="rounded-xl bg-gray-200 animate-pulse aspect-[4/3]"
-                />
+                  className="flex items-center gap-3 p-2 rounded-xl bg-gray-100 animate-pulse"
+                >
+                  <div className="w-16 h-12 rounded-md bg-gray-200" />
+                  <div className="flex-1 space-y-1">
+                    <div className="h-3 w-2/3 bg-gray-200 rounded" />
+                    <div className="h-3 w-1/3 bg-gray-200 rounded" />
+                  </div>
+                </li>
               ))}
-            </div>
+            </ul>
           )}
 
-          {/* Empty state */}
           {items?.length === 0 && (
             <div className="text-center text-sm text-gray-600 py-8">
-              Du har inga gillade rätter ännu. Gilla något för att bygga veckan!
+              Du har inga gillade rätter ännu.
             </div>
           )}
 
-          {/* List of cards */}
           {items && items.length > 0 && (
-            <div className="grid grid-cols-1 gap-3">
+            <ul className="space-y-2">
               {items.map(({ id, meal }) => {
-                const thumb =
-                  meal?.strMealThumb ? `${meal.strMealThumb}/small` : undefined;
+                const thumb = meal?.strMealThumb;
                 return (
-                  <article
+                  <li
                     key={id}
-                    className="rounded-xl border overflow-hidden bg-white shadow relative"
-                    title={meal?.strMeal}
+                    className="flex items-center gap-3 p-2 rounded-xl border bg-white shadow-sm relative"
                   >
-                    {/* delete button in corner */}
                     <button
                       onClick={() => handleRemove(id)}
-                      className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 text-red-600 text-xs px-2 py-1 rounded"
+                      className="absolute top-2 right-2 bg-white/90 hover:bg-red-100 text-red-600 text-xs px-2 py-1 rounded"
                     >
                       ✕
                     </button>
 
-                    <div className="aspect-[4/3] bg-gray-100">
+                    <div className="w-16 h-12 bg-gray-100 overflow-hidden rounded-md shrink-0">
                       <img
                         src={thumb}
                         alt={meal?.strMeal || "Meal"}
@@ -92,20 +90,21 @@ export default function ThisWeekPanel() {
                         loading="lazy"
                       />
                     </div>
-                    <div className="p-3">
-                      <h4 className="text-sm font-semibold line-clamp-2">
+
+                    <div className="min-w-0 flex-1">
+                      <h4 className="text-sm font-semibold leading-snug line-clamp-1">
                         {meal?.strMeal ?? "–"}
                       </h4>
-                      <p className="text-xs text-gray-600 mt-0.5">
+                      <p className="text-[11px] text-gray-600 leading-tight line-clamp-1">
                         {(meal?.strArea || "") +
                           (meal?.strArea && meal?.strCategory ? " · " : "") +
                           (meal?.strCategory || "")}
                       </p>
                     </div>
-                  </article>
+                  </li>
                 );
               })}
-            </div>
+            </ul>
           )}
         </div>
       </div>

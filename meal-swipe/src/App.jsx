@@ -14,7 +14,9 @@ export default function App() {
   const [actionLock, setActionLock] = useState(false);
 
   async function fetchBatch(n = 4) {
-    const batch = await Promise.all(Array.from({ length: n }, () => getRandomMeal()));
+    const batch = await Promise.all(
+      Array.from({ length: n }, () => getRandomMeal())
+    );
     return batch.filter(Boolean);
   }
 
@@ -73,7 +75,11 @@ export default function App() {
   }, []);
 
   if (loading) {
-    return <div className="min-h-screen grid place-items-center text-gray-600">Laddar...</div>;
+    return (
+      <div className="min-h-screen grid place-items-center text-gray-600">
+        Laddar...
+      </div>
+    );
   }
 
   if (err || meals.length === 0) {
@@ -81,10 +87,15 @@ export default function App() {
       <div className="min-h-screen grid place-items-center">
         <div className="p-6 rounded-2xl border bg-white shadow max-w-md w-full text-center">
           <p className="mb-4 font-semibold">Kunde inte hämta recept 😕</p>
-          <button onClick={loadInitial} className="px-4 py-2 rounded-lg bg-gray-900 text-white">
+          <button
+            onClick={loadInitial}
+            className="px-4 py-2 rounded-lg bg-gray-900 text-white"
+          >
             Försök igen
           </button>
-          {err && <p className="mt-3 text-xs text-gray-500">{err}</p>}
+          {err && (
+            <p className="mt-3 text-xs text-gray-500">{err}</p>
+          )}
         </div>
       </div>
     );
@@ -93,12 +104,10 @@ export default function App() {
   return (
     <div className="min-h-screen bg-gray-50">
       <main className="max-w-6xl mx-auto p-4">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch min-h-[640px]">
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
           {/* Vänster panel */}
           <div className="order-3 lg:order-1 lg:col-span-3 flex">
-            <div className="flex-1 flex flex-col">
-              <FilterPanel />
-            </div>
+            <FilterPanel className="h-[640px] w-full" />
           </div>
 
           {/* Kortstack i mitten */}
@@ -121,9 +130,7 @@ export default function App() {
 
           {/* Höger panel */}
           <div className="order-2 lg:order-3 lg:col-span-3 flex">
-            <div className="flex-1 flex flex-col">
-              <ThisWeekPanel />
-            </div>
+            <ThisWeekPanel className="h-[640px] w-full" />
           </div>
         </div>
       </main>
