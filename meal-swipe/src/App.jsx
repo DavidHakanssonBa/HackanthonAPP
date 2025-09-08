@@ -150,14 +150,13 @@ export default function App() {
     const top = meals[0];
     try {
       if (top) {
+        advanceDeck();
         await likeMealFull(top);
       }
     } catch (e) {
       console.error(e);
       setErr(String(e));
-    } finally {
-      advanceDeck();
-    }
+    } 
   }
 
   return (
