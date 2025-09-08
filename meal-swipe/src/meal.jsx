@@ -1,3 +1,4 @@
+
 // Minimal klient mot TheMealDB
 export async function getRandomMeal() {
   const r = await fetch("https://www.themealdb.com/api/json/v1/1/random.php");

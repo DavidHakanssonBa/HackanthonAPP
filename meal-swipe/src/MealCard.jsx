@@ -113,7 +113,7 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
                     aria-label="Visa detaljer"
                     title="Visa ingredienser & instruktioner"
                   >
-                    Visa detaljer
+                    Details
                   </button>
 
                   <button
@@ -122,7 +122,7 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
                     aria-label="Like"
                     title="Gilla"
                   >
-                    ❤️ Gilla
+                    ❤️ Like
                   </button>
                 </div>
               ) : (
@@ -145,7 +145,7 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
                 className="px-3 py-1.5 rounded-lg border hover:bg-white active:scale-[0.98] transition"
                 aria-label="Stäng detaljer"
               >
-                Till framsidan
+                To front
               </button>
             </div>
 
@@ -188,7 +188,7 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
                 <div className="mt-5 flex flex-wrap gap-3">
                   {meal.strSource && (
                     <a href={meal.strSource} target="_blank" rel="noreferrer" className="text-sm underline text-gray-700">
-                      Källa
+                      Source
                     </a>
                   )}
                   {meal.strYoutube && (
@@ -211,7 +211,7 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
                     onClick={() => handleSwipe("right", onLike)}
                     className="flex-1 py-2 rounded-xl bg-green-600 text-white font-semibold hover:brightness-110 active:scale-[0.98] transition"
                   >
-                    ❤️ Gilla
+                    ❤️ Like
                   </button>
                 </div>
               )}

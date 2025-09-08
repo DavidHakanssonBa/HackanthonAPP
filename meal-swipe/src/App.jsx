@@ -1,3 +1,4 @@
+
 // src/App.jsx
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -209,8 +210,8 @@ export default function App() {
 
           {/* Höger: Veckans matplan */}
           <div className="order-2 lg:order-3 lg:col-span-3 flex">
-            <div className="flex-1 flex flex-col">
-              <ThisWeekPanel />
+            <div className="order-2 lg:order-3 lg:col-span-3 flex">
+              <ThisWeekPanel className="h-[640px] w-full" />
             </div>
           </div>
         </div>

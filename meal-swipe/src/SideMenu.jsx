@@ -15,13 +15,13 @@ export default function SideMenu() {
             onClick={onClose}
             className="px-3 py-1.5 rounded-lg border hover:bg-gray-50"
           >
-            Stäng
+            Close
           </button>
         )}
       </div>
 
       <div className="p-4 flex-1 overflow-y-auto">
-        <h4 className="text-sm font-semibold mb-2">Ingredienser</h4>
+        <h4 className="text-sm font-semibold mb-2">Ingredients</h4>
         <ul className="space-y-1 mb-5">
           {ingredients.map((it, i) => (
             <li key={i} className="text-sm text-gray-800">

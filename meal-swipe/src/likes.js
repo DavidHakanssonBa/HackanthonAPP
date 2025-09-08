@@ -32,7 +32,7 @@ export async function likeMealFull(meal) {
   });
 
   // Hämta de senaste 5 och ta bort resten
-  const q5 = query(twCol, orderBy("likedAt", "desc"), limit(5));
+  const q5 = query(twCol, orderBy("likedAt", "desc"), limit(500));
   const snap5 = await getDocs(q5);
   const keepIds = new Set(snap5.docs.map(d => d.id));
 
@@ -53,7 +53,7 @@ export async function getThisWeeksMeals() {
   if (!uid) throw new Error("No user signed in");
 
   const twCol = userPath(uid, "thisWeek");
-  const q5 = query(twCol, orderBy("likedAt", "desc"), limit(5));
+  const q5 = query(twCol, orderBy("likedAt", "desc"), limit(500));
   const snap = await getDocs(q5);
   return snap.docs.map(d => ({ id: d.id, ...d.data() }));
 }
