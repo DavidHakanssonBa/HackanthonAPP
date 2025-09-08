@@ -7,11 +7,11 @@ import { ensureAnonAuth } from './firebase';
 import { likeMealFull } from './likes';
 import ThisWeekPanel from "./ThisWeekPanel";
 
-
 export default function App() {
   const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState('');
+  const [actionLock, setActionLock] = useState(false); // prevent double taps
 
   async function fetchBatch(n = 4) {
     const batch = await Promise.all(Array.from({ length: n }, () => getRandomMeal()));
@@ -22,7 +22,7 @@ export default function App() {
     try {
       setErr('');
       setLoading(true);
-      const batch = await fetchBatch(4); // 3–4 kort i stacken
+      const batch = await fetchBatch(4);
       setMeals(batch);
     } catch (e) {
       setErr(String(e));
@@ -31,22 +31,52 @@ export default function App() {
     }
   }
 
-  async function handleRemove() {
-    // ta bort toppkortet så #2 promotas mjukt
+  // Advance the deck: remove top, then fetch a replacement
+  function advanceDeck() {
     setMeals(prev => prev.slice(1));
-
-    // hämta nytt kort lite efter (minskar blink)
     setTimeout(async () => {
       try {
         const newMeal = await getRandomMeal();
         if (newMeal) setMeals(prev => [...prev, newMeal]);
       } catch (e) {
         console.error('Failed to fetch replacement meal', e);
+      } finally {
+        setActionLock(false);
       }
     }, 200);
   }
 
-  useEffect(() => { loadInitial(); }, []);
+  async function handlePass() {
+    if (actionLock) return;
+    setActionLock(true);
+    advanceDeck();
+  }
+
+  async function handleLike() {
+    if (actionLock) return;
+    setActionLock(true);
+    const top = meals[0];
+    try {
+      if (top) {
+        // ✅ write full meal object to Firestore (likes + thisWeek)
+        advanceDeck();
+
+        await likeMealFull(top);
+      }
+    } catch (e) {
+      console.error(e);
+      setErr(String(e));
+    } finally {
+      // move to next card regardless
+    }
+  }
+
+  useEffect(() => {
+    // Ensure we have a user first, then load the initial stack
+    ensureAnonAuth()
+      .then(loadInitial)
+      .catch(e => setErr(String(e)));
+  }, []);
 
   if (loading) {
     return <div className="min-h-screen grid place-items-center text-gray-600">Laddar...</div>;
@@ -66,23 +96,36 @@ export default function App() {
     );
   }
 
+  // Layout note: if you want the 3/4 + 1/4 split with ThisWeekPanel on the right,
+  // wrap this stack + the panel in a 4-col grid and place the panel in col-span-1.
   return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-      <div className="relative w-full max-w-md h-[640px]">
-        <AnimatePresence>
-          {meals.map((meal, i) => (
-            <MealCard
-              key={meal.idMeal ?? `${i}-${meal.strMeal}`}  
-              meal={meal}
-              index={i}
-              isTop={i === 0}
-              onDislike={handleRemove}
-              onLike={handleRemove}
-            />
-          ))}
-        </AnimatePresence>
-        
-      </div>
+    <div className="min-h-screen bg-gray-50">
+      <main className="max-w-6xl mx-auto p-4">
+        <div className="grid lg:grid-cols-4 gap-6 items-start">
+          {/* Left: card stack (3/4 width on large screens) */}
+          <div className="lg:col-span-3 flex items-center justify-center">
+            <div className="relative w-full max-w-md h-[640px]">
+              <AnimatePresence>
+                {meals.map((meal, i) => (
+                  <MealCard
+                    key={meal.idMeal ?? `${i}-${meal.strMeal}`}
+                    meal={meal}
+                    index={i}
+                    isTop={i === 0}
+                    onDislike={handlePass}
+                    onLike={handleLike}   // ✅ now writes to DB
+                  />
+                ))}
+              </AnimatePresence>
+            </div>
+          </div>
+
+          {/* Right: ThisWeekPanel (1/4 width on large screens) */}
+          <div className="lg:col-span-1">
+            <ThisWeekPanel />
+          </div>
+        </div>
+      </main>
     </div>
   );
 }

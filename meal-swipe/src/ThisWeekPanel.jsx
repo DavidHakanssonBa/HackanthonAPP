@@ -39,7 +39,7 @@ export default function ThisWeekPanel() {
         <div className="p-4">
           {/* Loading skeleton */}
           {items === null && (
-            <div className="grid grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 gap-3">
               {Array.from({ length: 5 }).map((_, i) => (
                 <div
                   key={i}
@@ -56,35 +56,39 @@ export default function ThisWeekPanel() {
             </div>
           )}
 
-          {/* Grid of cards */}
+          {/* List of cards (single column) */}
           {items && items.length > 0 && (
-            <div className="grid grid-cols-2 gap-3">
-              {items.map(({ id, meal }) => (
-                <article
-                  key={id}
-                  className="rounded-xl border overflow-hidden bg-white shadow"
-                  title={meal?.strMeal}
-                >
-                  <div className="aspect-[4/3] bg-gray-100">
-                    <img
-                      src={meal?.strMealThumb}
-                      alt={meal?.strMeal || "Meal"}
-                      className="w-full h-full object-cover"
-                      loading="lazy"
-                    />
-                  </div>
-                  <div className="p-3">
-                    <h4 className="text-sm font-semibold line-clamp-2">
-                      {meal?.strMeal ?? "–"}
-                    </h4>
-                    <p className="text-xs text-gray-600 mt-0.5">
-                      {(meal?.strArea || "") +
-                        (meal?.strArea && meal?.strCategory ? " · " : "") +
-                        (meal?.strCategory || "")}
-                    </p>
-                  </div>
-                </article>
-              ))}
+            <div className="grid grid-cols-1 gap-3">
+              {items.map(({ id, meal }) => {
+                const thumb =
+                  meal?.strMealThumb ? `${meal.strMealThumb}/small` : undefined;
+                return (
+                  <article
+                    key={id}
+                    className="rounded-xl border overflow-hidden bg-white shadow"
+                    title={meal?.strMeal}
+                  >
+                    <div className="aspect-[4/3] bg-gray-100">
+                      <img
+                        src={thumb}
+                        alt={meal?.strMeal || "Meal"}
+                        className="w-full h-full object-cover"
+                        loading="lazy"
+                      />
+                    </div>
+                    <div className="p-3">
+                      <h4 className="text-sm font-semibold line-clamp-2">
+                        {meal?.strMeal ?? "–"}
+                      </h4>
+                      <p className="text-xs text-gray-600 mt-0.5">
+                        {(meal?.strArea || "") +
+                          (meal?.strArea && meal?.strCategory ? " · " : "") +
+                          (meal?.strCategory || "")}
+                      </p>
+                    </div>
+                  </article>
+                );
+              })}
             </div>
           )}
         </div>
