@@ -1,7 +1,12 @@
+// App.jsx
 import { useEffect, useState } from 'react';
 import { AnimatePresence } from 'framer-motion';
 import { getRandomMeal } from './meal';
 import MealCard from './MealCard';
+import { ensureAnonAuth } from './firebase';
+import { likeMealFull } from './likes';
+import ThisWeekPanel from "./ThisWeekPanel";
+
 
 export default function App() {
   const [meals, setMeals] = useState([]);
@@ -76,6 +81,7 @@ export default function App() {
             />
           ))}
         </AnimatePresence>
+        
       </div>
     </div>
   );
