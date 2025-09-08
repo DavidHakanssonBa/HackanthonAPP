@@ -1,4 +1,3 @@
-// src/ThisWeekPanel.jsx
 import { useEffect, useState } from "react";
 import { auth, db } from "./firebase";
 import {
@@ -7,14 +6,16 @@ import {
   query,
   orderBy,
   limit,
+  deleteDoc,
+  doc,
 } from "firebase/firestore";
 
 export default function ThisWeekPanel() {
   const [items, setItems] = useState(null); // null = loading, [] = empty
+  const uid = auth.currentUser?.uid;
 
   useEffect(() => {
-    const uid = auth.currentUser?.uid;
-    if (!uid) return; // ensureAnonAuth runs before this component mounts
+    if (!uid) return;
 
     const colRef = collection(db, "users", uid, "thisWeek");
     const q5 = query(colRef, orderBy("likedAt", "desc"), limit(5));
@@ -25,7 +26,15 @@ export default function ThisWeekPanel() {
     });
 
     return () => unsub();
-  }, []);
+  }, [uid]);
+
+  // 🔥 delete function
+  const handleRemove = async (id) => {
+    if (!uid) return;
+    const ref = doc(db, "users", uid, "thisWeek", id);
+    await deleteDoc(ref);
+    // no need to call setItems manually, onSnapshot updates automatically
+  };
 
   return (
     <aside className="w-full">
@@ -35,7 +44,6 @@ export default function ThisWeekPanel() {
           <p className="text-xs text-gray-500">Senaste 5 gillade rätter</p>
         </header>
 
-        {/* Content */}
         <div className="p-4">
           {/* Loading skeleton */}
           {items === null && (
@@ -56,7 +64,7 @@ export default function ThisWeekPanel() {
             </div>
           )}
 
-          {/* List of cards (single column) */}
+          {/* List of cards */}
           {items && items.length > 0 && (
             <div className="grid grid-cols-1 gap-3">
               {items.map(({ id, meal }) => {
@@ -65,9 +73,17 @@ export default function ThisWeekPanel() {
                 return (
                   <article
                     key={id}
-                    className="rounded-xl border overflow-hidden bg-white shadow"
+                    className="rounded-xl border overflow-hidden bg-white shadow relative"
                     title={meal?.strMeal}
                   >
+                    {/* delete button in corner */}
+                    <button
+                      onClick={() => handleRemove(id)}
+                      className="absolute top-2 right-2 bg-white/80 hover:bg-red-100 text-red-600 text-xs px-2 py-1 rounded"
+                    >
+                      ✕
+                    </button>
+
                     <div className="aspect-[4/3] bg-gray-100">
                       <img
                         src={thumb}
