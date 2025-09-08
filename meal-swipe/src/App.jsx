@@ -86,12 +86,12 @@ export default function App() {
     return (
       <div className="min-h-screen grid place-items-center">
         <div className="p-6 rounded-2xl border bg-white shadow max-w-md w-full text-center">
-          <p className="mb-4 font-semibold">Kunde inte hämta recept 😕</p>
+          <p className="mb-4 font-semibold">Could not load recipe 😕</p>
           <button
             onClick={loadInitial}
             className="px-4 py-2 rounded-lg bg-gray-900 text-white"
           >
-            Försök igen
+            Try again
           </button>
           {err && (
             <p className="mt-3 text-xs text-gray-500">{err}</p>

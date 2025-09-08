@@ -130,7 +130,7 @@ export default function MealDetailsModal({ open, onClose, meal }) {
                           rel="noreferrer"
                           className="text-sm underline text-gray-800 bg-white/60 backdrop-blur-sm rounded px-1.5 py-0.5"
                         >
-                          Källa
+                          Source
                         </a>
                       )}
                       {meal.strYoutube && (

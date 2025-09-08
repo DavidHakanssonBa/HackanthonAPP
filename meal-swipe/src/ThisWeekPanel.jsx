@@ -48,8 +48,8 @@ export default function ThisWeekPanel({ className = "" }) {
           {/* Header */}
           <header className="px-5 py-4 border-b bg-gray-50 shrink-0 flex items-center justify-between">
             <div>
-              <h3 className="text-lg font-semibold">Veckans matplan</h3>
-              <p className="text-xs text-gray-500">Senaste gillade rätter</p>
+              <h3 className="text-lg font-semibold">Weekly meal plan</h3>
+              <p className="text-xs text-gray-500">Recently liked dishes</p>
             </div>
 
             <div className="flex items-center gap-4">
@@ -75,7 +75,7 @@ export default function ThisWeekPanel({ className = "" }) {
                 className="px-3 py-1.5 rounded-lg bg-indigo-600 text-white text-xs font-medium shadow hover:bg-indigo-700 transition"
                 title="Visa inköpslistan"
               >
-                Visa inköpslista
+                Show shopping list
               </button>
             </div>
           </header>
@@ -98,7 +98,7 @@ export default function ThisWeekPanel({ className = "" }) {
 
             {items?.length === 0 && (
               <div className="text-center text-sm text-gray-600 py-8">
-                Du har inga gillade rätter ännu.
+                You do not have any saved dishes yet.
               </div>
             )}
 
