@@ -8,6 +8,10 @@ import { ensureAnonAuth } from "./firebase";
 import { likeMealFull } from "./likes";
 import ThisWeekPanel from "./ThisWeekPanel";
 import FilterPanel from "./FilterPanel";
+import BrandBadge from "./BrandBadge";
+import BrandOverCard from "./BrandOverCard";
+
+
 
 const BUFFER_SIZE = 5; // antal detaljerade rätter vi håller redo i filter-läge
 
@@ -178,7 +182,7 @@ export default function App() {
                   {err}
                 </div>
               )}
-
+              <BrandOverCard />
               <AnimatePresence>
                 {meals.map((meal, i) => (
                   <MealCard
