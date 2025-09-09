@@ -42,13 +42,13 @@ export default function FilterPanel({ onApply }) {
         <header className="px-5 py-4 border-b bg-gray-50 flex items-center justify-between shrink-0">
           <div>
             <h3 className="text-lg font-semibold">Filter</h3>
-            <p className="text-xs text-gray-500">Välj kategorier</p>
+            <p className="text-xs text-gray-500">Select categories</p>
           </div>
           <button
             onClick={() => setOpen((o) => !o)}
             className="text-sm px-3 py-1.5 rounded-lg border hover:bg-white"
           >
-            {open ? "Dölj" : "Visa"}
+            {open ? "Hide" : "Show"}
           </button>
         </header>
 
@@ -77,13 +77,13 @@ export default function FilterPanel({ onApply }) {
                 onClick={handleApply}
                 className="flex-1 px-3 py-2 rounded-xl bg-gray-900 text-white text-sm font-medium"
               >
-                Tillämpa
+                Apply
               </button>
               <button
                 onClick={handleClear}
                 className="flex-1 px-3 py-2 rounded-xl border text-sm font-medium"
               >
-                Rensa
+                Clear
               </button>
             </div>
           </div>
