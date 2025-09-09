@@ -76,7 +76,7 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
       <div className="scene w-full h-full">
         <div
           className="relative shadow-xl bg-white overflow-hidden rounded-2xl"
-          style={{ minHeight: 560 }}
+          style={{ minHeight: 630 }}
         >
           {/* -------- FRONT -------- */}
           <article style={frontStyle}>

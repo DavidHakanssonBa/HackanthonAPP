@@ -9,6 +9,7 @@ export default function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [phoneNumber, setPhoneNumber] = useState("");
   const [err, setErr] = useState("");
   const [busy, setBusy] = useState(false);
   const navigate = useNavigate();
@@ -23,7 +24,7 @@ export default function LoginPage() {
     setErr(""); setBusy(true);
     try {
       if (mode === "signin") await signInEmail(email, password);
-      else await registerEmail({ name, email, password });
+      else await registerEmail({ name, email, phoneNumber, password });
       navigate("/");
     } catch (e) {
       setErr(e.message || String(e));
@@ -72,14 +73,23 @@ export default function LoginPage() {
           </button>
 
           <div className="grid gap-2">
-            {mode === "signup" && (
-              <input
-                value={name}
-                onChange={(e)=>setName(e.target.value)}
-                placeholder="Full name"
-                className="px-3 py-2 rounded-lg border"
-              />
-            )}
+{mode === "signup" && (
+  <>
+    <input
+      value={name}
+      onChange={(e)=>setName(e.target.value)}
+      placeholder="Full name"
+      className="px-3 py-2 rounded-lg border"
+    />
+    <input
+      type="tel"
+      value={phoneNumber}
+      onChange={(e)=>setPhoneNumber(e.target.value)}
+      placeholder="Phone number"
+      className="px-3 py-2 rounded-lg border"
+    />
+  </>
+)}
             <input
               type="email"
               value={email}
