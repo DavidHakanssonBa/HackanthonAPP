@@ -6,7 +6,6 @@ import MealCard from "./MealCard";
 import { likeMealFull } from "./likes";
 import ThisWeekPanel from "./ThisWeekPanel";
 import FilterPanel from "./FilterPanel";
-import BrandOverCard from "./BrandOverCard";
 import LogoBitematch from "./LogoBiteMatch";
 import { useNavigate } from "react-router-dom";
 import { ensureAnonAuth, signOutAndStayAnonymous } from "./firebase";
@@ -175,8 +174,8 @@ export default function App() {
           <div className="flex items-center gap-4">
             <LogoBitematch />
             <nav className="hidden md:flex items-center gap-1">
-              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">Om oss</button>
-              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">Kontakt</button>
+              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">About</button>
+              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">Contact</button>
               <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">FAQ</button>
             </nav>
           </div>
@@ -217,8 +216,6 @@ export default function App() {
                   {err}
                 </div>
               )}
-
-              <BrandOverCard />
 
               <AnimatePresence>
                 {meals.map((meal, i) => (

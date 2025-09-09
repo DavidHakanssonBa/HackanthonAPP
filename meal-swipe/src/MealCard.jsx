@@ -66,7 +66,6 @@ export default function MealCard({ meal, onDislike, onLike, isTop = false, index
       transition={{ duration: 0.45 }}
       style={{
         position: "absolute",
-        top: "75px",
         margin: "0 auto",
         zIndex: 100 - index,
         pointerEvents: isTop ? "auto" : "none",
