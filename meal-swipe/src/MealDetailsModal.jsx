@@ -1,10 +1,15 @@
 // src/MealDetailsModal.jsx
-import { useEffect, useMemo } from "react";
+import { useEffect, useMemo, useState, Suspense, lazy } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { parseIngredients } from "./meal";
 
+// Lazy-load to keep initial bundle small
+const CookModeModal = lazy(() => import("./CookModeModal"));
+
 export default function MealDetailsModal({ open, onClose, meal }) {
+  const [cookOpen, setCookOpen] = useState(false);
+
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose?.();
@@ -85,6 +90,16 @@ export default function MealDetailsModal({ open, onClose, meal }) {
                       {area}{area && category ? " · " : ""}{category}
                     </p>
                   </div>
+
+                  {/* NEW: Start Cook Mode button */}
+                  <button
+                    onClick={() => setCookOpen(true)}
+                    className="px-3 py-1.5 rounded-lg bg-green-600 text-white text-sm font-medium hover:bg-green-700 transition"
+                    disabled={!meal}
+                    title="Open Cook Mode"
+                  >
+                    Start Cook Mode
+                  </button>
                 </div>
 
                 <div className="p-5 flex-1 overflow-y-auto">
@@ -140,7 +155,7 @@ export default function MealDetailsModal({ open, onClose, meal }) {
                           rel="noreferrer"
                           className="text-sm underline text-gray-800 bg-white/60 backdrop-blur-sm rounded px-1.5 py-0.5"
                         >
-                          YouTube-video
+                          YouTube video
                         </a>
                       )}
                     </div>
@@ -148,6 +163,17 @@ export default function MealDetailsModal({ open, onClose, meal }) {
                 </div>
               </div>
             </div>
+
+            {/* Mount Cook Mode when requested */}
+            <Suspense fallback={null}>
+              {cookOpen && (
+                <CookModeModal
+                  open
+                  onClose={() => setCookOpen(false)}
+                  meal={meal}
+                />
+              )}
+            </Suspense>
           </motion.div>
         </motion.div>
       )}

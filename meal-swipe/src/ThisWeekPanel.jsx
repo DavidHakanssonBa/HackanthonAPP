@@ -12,6 +12,8 @@ import {
 } from "firebase/firestore";
 import ShoppingListModal from "./ShoppingListModal";
 import MealDetailsModal from "./MealDetailsModal"; // ⬅️ NEW
+import CookModeModal from "./CookModeModal";
+
 
 export default function ThisWeekPanel({ className = "" }) {
   const [items, setItems] = useState(null);
@@ -155,6 +157,7 @@ export default function ThisWeekPanel({ className = "" }) {
       </aside>
 
       {/* Modals */}
+      
       <ShoppingListModal open={open} onClose={() => setOpen(false)} />
       <MealDetailsModal
         open={!!detailsMeal}
