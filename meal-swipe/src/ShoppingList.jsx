@@ -10,6 +10,17 @@ import {
   limit,
 } from "firebase/firestore";
 
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";
+
+const functions = getFunctions(undefined, "europe-west1");
+connectFunctionsEmulator(functions, "localhost", 5001); // bara lokalt test
+
+export async function sendCustomSms(to, message) {
+  const fn = httpsCallable(functions, "sendSms");
+  return (await fn({ to, body: message })).data;
+}
+
+
 export default function ShoppingList() {
   const [docs, setDocs] = useState(null); // null = loading
   const [checked, setChecked] = useState(() => new Set());
@@ -90,6 +101,7 @@ export default function ShoppingList() {
       return next;
     });
   }
+
 
   return (
     <aside className="w-full">
