@@ -5,7 +5,6 @@ import { AnimatePresence, motion } from "framer-motion";
 import ShoppingList from "./ShoppingList";
 
 export default function ShoppingListModal({ open, onClose }) {
-  // ESC to close + lock body scroll
   useEffect(() => {
     if (!open) return;
     const onKey = (e) => e.key === "Escape" && onClose?.();
@@ -28,20 +27,20 @@ export default function ShoppingListModal({ open, onClose }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={onClose} // click backdrop to close
+          onClick={onClose}
           aria-hidden
         >
           <motion.div
             role="dialog"
             aria-modal="true"
-            className="absolute inset-x-4 top-6 bottom-6 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[760px] max-h-[85vh] overflow-y-auto"
+            className="absolute inset-x-4 top-6 bottom-6 md:inset-auto md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2 md:w-[760px] max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-xl"
             initial={{ y: 20, opacity: 0, scale: 0.98 }}
             animate={{ y: 0, opacity: 1, scale: 1 }}
             exit={{ y: 12, opacity: 0, scale: 0.98 }}
             transition={{ type: "spring", stiffness: 320, damping: 28 }}
-            onClick={(e) => e.stopPropagation()} // don't close when clicking content
+            onClick={(e) => e.stopPropagation()}
           >
-            {/* Close button floating over the card */}
+            {/* Close button */}
             <button
               onClick={onClose}
               className="absolute right-3 top-3 z-10 inline-flex items-center justify-center h-9 w-9 rounded-full bg-white/90 border shadow hover:bg-white"
@@ -53,8 +52,23 @@ export default function ShoppingListModal({ open, onClose }) {
               </svg>
             </button>
 
-            {/* Your existing ShoppingList card drops right in */}
-            <ShoppingList />
+            {/* Header med titel + knapp */}
+            <header className="px-5 py-4 border-b bg-gray-50 flex items-center">
+              <div>
+                <h3 className="text-lg font-semibold">Shopping List</h3>
+                <p className="text-xs text-gray-500">
+                  Combined ingredients from the 5 most recently liked meals
+                </p>
+              </div>
+
+              <button className="ml-35 px-4 py-2 rounded-lg bg-pink-600 text-white font-medium hover:bg-pink-700 transition">
+                Skicka inköpslista
+              </button>
+          </header>
+
+
+            {/* Shopping list content – döljer intern header */}
+            <ShoppingList hideHeader />
           </motion.div>
         </motion.div>
       )}

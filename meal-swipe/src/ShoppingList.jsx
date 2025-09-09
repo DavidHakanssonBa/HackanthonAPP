@@ -2,14 +2,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "./firebase";
 import { parseIngredients } from "./meal";
-import {
-  collection,
-  onSnapshot,
-  query,
-  orderBy,
-  limit,
-} from "firebase/firestore";
-
+import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
 import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";
 
 const functions = getFunctions(undefined, "europe-west1");
@@ -20,8 +13,8 @@ export async function sendCustomSms(to, message) {
   return (await fn({ to, body: message })).data;
 }
 
-
-export default function ShoppingList() {
+// ⬇️ Ny prop: hideHeader (default false)
+export default function ShoppingList({ hideHeader = false }) {
   const [docs, setDocs] = useState(null); // null = loading
   const [checked, setChecked] = useState(() => new Set());
 
@@ -38,15 +31,10 @@ export default function ShoppingList() {
     return () => unsub();
   }, []);
 
-  // Normalize to group "Sugar" and "sugar" together
   function normKey(name) {
-    return (name || "")
-      .trim()
-      .toLowerCase()
-      .replace(/\s+/g, " ");
+    return (name || "").trim().toLowerCase().replace(/\s+/g, " ");
   }
 
-  // Summarize identical measures (e.g., "1 cup" occurs multiple times)
   function summarizeMeasures(measures) {
     const freq = new Map();
     for (const m of measures) {
@@ -59,15 +47,13 @@ export default function ShoppingList() {
       .join(", ");
   }
 
-  // Aggregate: { key, name, measures[], noMeasureCount }
   const shopping = useMemo(() => {
     if (!docs) return null;
-
     const agg = new Map();
 
     for (const { meal } of docs) {
       if (!meal) continue;
-      const ings = parseIngredients(meal); // [{ ingredient, measure }]
+      const ings = parseIngredients(meal);
       for (const { ingredient, measure } of ings) {
         const key = normKey(ingredient);
         if (!key) continue;
@@ -102,26 +88,25 @@ export default function ShoppingList() {
     });
   }
 
-
   return (
     <aside className="w-full">
       <div className="rounded-2xl bg-white shadow-xl border overflow-hidden">
-        <header className="px-5 py-4 border-b bg-gray-50">
-          <h3 className="text-lg font-semibold">Shopping List</h3>
-          <p className="text-xs text-gray-500">
-            Combined ingredients from the 5 most recently liked meals
-          </p>
-        </header>
+        {/* Rendera headern bara om vi INTE är i modalens header */}
+        {!hideHeader && (
+          <header className="px-5 py-4 border-b bg-gray-50">
+            <h3 className="text-lg font-semibold">Shopping List</h3>
+            <p className="text-xs text-gray-500">
+              Combined ingredients from the 5 most recently liked meals
+            </p>
+          </header>
+        )}
 
         <div className="p-4">
           {/* Loading */}
           {shopping === null && (
             <div className="space-y-3">
               {Array.from({ length: 6 }).map((_, i) => (
-                <div
-                  key={i}
-                  className="h-10 rounded-lg bg-gray-200 animate-pulse"
-                />
+                <div key={i} className="h-10 rounded-lg bg-gray-200 animate-pulse" />
               ))}
             </div>
           )}
@@ -139,12 +124,8 @@ export default function ShoppingList() {
               {shopping.map((it) => {
                 const summary = summarizeMeasures(it.measures);
                 const noMeasure =
-                  it.noMeasureCount > 0
-                    ? `${it.noMeasureCount}× (no measure)`
-                    : "";
-                const details = [summary, noMeasure]
-                  .filter(Boolean)
-                  .join(", ");
+                  it.noMeasureCount > 0 ? `${it.noMeasureCount}× (no measure)` : "";
+                const details = [summary, noMeasure].filter(Boolean).join(", ");
 
                 return (
                   <li key={it.key} className="py-3">
@@ -158,9 +139,7 @@ export default function ShoppingList() {
                       <div className="flex-1">
                         <div className="font-medium">{it.name}</div>
                         {details && (
-                          <div className="text-xs text-gray-600 mt-0.5">
-                            {details}
-                          </div>
+                          <div className="text-xs text-gray-600 mt-0.5">{details}</div>
                         )}
                       </div>
                     </label>
