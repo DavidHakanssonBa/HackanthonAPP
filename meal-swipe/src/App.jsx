@@ -3,13 +3,17 @@ import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
 import { getMealsByCategory, getMealById, getRandomMeal } from "./meal";
 import MealCard from "./MealCard";
-import { ensureAnonAuth } from "./firebase";
 import { likeMealFull } from "./likes";
 import ThisWeekPanel from "./ThisWeekPanel";
 import FilterPanel from "./FilterPanel";
-import BrandBadge from "./BrandBadge";
 import BrandOverCard from "./BrandOverCard";
 import LogoBitematch from "./LogoBiteMatch";
+import { useNavigate } from "react-router-dom";
+import { ensureAnonAuth, signOutAndStayAnonymous } from "./firebase";
+
+import { useAuth } from "./AuthProvider"; // ⬅️ read current user
+
+
 
 const BUFFER_SIZE = 5;
 
@@ -21,6 +25,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [actionLock, setActionLock] = useState(false);
+  const { user } = useAuth();
 
   useEffect(() => {
     ensureAnonAuth().catch((e) => setErr(String(e)));
@@ -145,14 +150,26 @@ export default function App() {
     } 
   }
 
-  function handleLoginClick() {
-    alert("Login clicked!");
-    // här kan du istället navigera till en login-sida
+  const navigate = useNavigate();
+
+  function handleAuthClick() {
+    const isAnon = !user || user.isAnonymous;
+    if (isAnon) {
+      navigate("/login");
+    } else {
+      signOutAndStayAnonymous();
+    }
   }
+
+  const isAnon = !user || user.isAnonymous; // treat "no user yet" as guest
+  const display = user?.displayName || user?.email || (isAnon ? "Guest" : "");
+  const initial = (display?.[0] || "U").toUpperCase();
+
+
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* TOP BAR med logga + flikar */}
+      {/* TOP BAR */}
       <header className="sticky top-0 z-50 bg-[#FFC0CB] border-b">
         <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
           <div className="flex items-center gap-4">
@@ -164,17 +181,24 @@ export default function App() {
             </nav>
           </div>
 
-          {/* Höger: Log in-knapp */}
-          <div>
+          {/* Right: user + login/logout */}
+          <div className="flex items-center gap-3">
+            <span className="hidden sm:flex items-center gap-2 text-sm text-gray-800">
+              <span className="inline-flex h-8 w-8 items-center justify-center rounded-full bg-white/70 border font-semibold">
+                {initial}
+              </span>
+              <span className="max-w-[12rem] truncate">{display}</span>
+            </span>
             <button
-              onClick={handleLoginClick}
+              onClick={handleAuthClick}
               className="px-3 py-1.5 rounded-lg border hover:bg-pink-100"
             >
-              Log in
+              {isAnon ? "Log in" : "Log out"}
             </button>
           </div>
         </div>
       </header>
+
 
       <main className="max-w-6xl mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch min-h-[640px]">
