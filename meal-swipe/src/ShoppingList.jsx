@@ -3,15 +3,6 @@ import { useEffect, useMemo, useState } from "react";
 import { auth, db } from "./firebase";
 import { parseIngredients } from "./meal";
 import { collection, onSnapshot, query, orderBy, limit } from "firebase/firestore";
-import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";
-
-const functions = getFunctions(undefined, "europe-west1");
-connectFunctionsEmulator(functions, "localhost", 5001); // bara lokalt test
-
-export async function sendCustomSms(to, message) {
-  const fn = httpsCallable(functions, "sendSms");
-  return (await fn({ to, body: message })).data;
-}
 
 // ⬇️ Ny prop: hideHeader (default false)
 export default function ShoppingList({ hideHeader = false }) {

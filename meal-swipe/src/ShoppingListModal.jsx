@@ -3,6 +3,22 @@ import { useEffect } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import ShoppingList from "./ShoppingList";
+import { getFunctions, httpsCallable, connectFunctionsEmulator } from "firebase/functions";
+// Example: src/SharePlainList.jsx
+import { useShoppingListText } from "./useShoppingList";
+
+
+const functions = getFunctions(undefined, "europe-west1");
+connectFunctionsEmulator(functions, "localhost", 5001); // bara lokalt test
+
+export async function sendCustomSms(to, message) {
+  const fn = httpsCallable(functions, "sendSms");
+  console.log(message)
+  return (await fn({ to, body: message })).data;
+}
+
+
+
 
 export default function ShoppingListModal({ open, onClose }) {
   useEffect(() => {
@@ -16,7 +32,8 @@ export default function ShoppingListModal({ open, onClose }) {
       document.body.style.overflow = prev;
     };
   }, [open, onClose]);
-
+  const { text, loading } = useShoppingListText(100);
+  
   if (typeof document === "undefined") return null;
 
   return createPortal(
@@ -61,8 +78,8 @@ export default function ShoppingListModal({ open, onClose }) {
                 </p>
               </div>
 
-              <button className="ml-35 px-4 py-2 rounded-lg bg-pink-600 text-white font-medium hover:bg-pink-700 transition">
-                Skicka inköpslista
+              <button onClick={() => sendCustomSms("+46727134252", text)} className="ml-35 px-4 py-2 rounded-lg bg-pink-600 text-white font-medium hover:bg-pink-700 transition">
+                Send shopping list
               </button>
           </header>
 
