@@ -1,4 +1,3 @@
-
 // src/App.jsx
 import { useEffect, useState } from "react";
 import { AnimatePresence } from "framer-motion";
@@ -10,16 +9,15 @@ import ThisWeekPanel from "./ThisWeekPanel";
 import FilterPanel from "./FilterPanel";
 import BrandBadge from "./BrandBadge";
 import BrandOverCard from "./BrandOverCard";
+import LogoBitematch from "./LogoBiteMatch";
 
-
-
-const BUFFER_SIZE = 5; // antal detaljerade rätter vi håller redo i filter-läge
+const BUFFER_SIZE = 5;
 
 export default function App() {
-  const [selected, setSelected] = useState([]); // valda kategorier
-  const [idPool, setIdPool] = useState([]);     // filter-läge: id:n som matchar
-  const [cursor, setCursor] = useState(0);      // index i idPool
-  const [meals, setMeals] = useState([]);       // kortstacken (båda lägen)
+  const [selected, setSelected] = useState([]);
+  const [idPool, setIdPool] = useState([]);
+  const [cursor, setCursor] = useState(0);
+  const [meals, setMeals] = useState([]);
   const [loading, setLoading] = useState(false);
   const [err, setErr] = useState("");
   const [actionLock, setActionLock] = useState(false);
@@ -28,7 +26,6 @@ export default function App() {
     ensureAnonAuth().catch((e) => setErr(String(e)));
   }, []);
 
-  // Helpers
   const uniqueBy = (arr, keyFn) =>
     Array.from(new Map(arr.map((x) => [keyFn(x), x])).values());
 
@@ -46,30 +43,22 @@ export default function App() {
     return batch.filter(Boolean);
   }
 
-  // När filter ändras:
-  // - Om inga kategorier: ladda random stack
-  // - Annars: bygg ny idPool (filter.php), resetta buffer
   useEffect(() => {
     let cancelled = false;
-
     async function run() {
       setErr("");
       setMeals([]);
       setIdPool([]);
       setCursor(0);
-
       setLoading(true);
       try {
         if (selected.length === 0) {
-          // RANDOM-LÄGE
           const batch = await fetchBatchRandom(4);
           if (!cancelled) setMeals(batch);
           return;
         }
-
-        // FILTER-LÄGE
         const lists = await Promise.all(selected.map(getMealsByCategory));
-        const flat = lists.flat(); // { idMeal, strMeal, strMealThumb }[]
+        const flat = lists.flat();
         const deduped = uniqueBy(flat, (m) => m.idMeal);
         const shuffled = shuffle(deduped);
         if (!cancelled) {
@@ -85,20 +74,17 @@ export default function App() {
         if (!cancelled) setLoading(false);
       }
     }
-
     run();
     return () => {
       cancelled = true;
     };
   }, [selected]);
 
-  // Fyll på bufferten (bara meningsfullt i filter-läge)
   async function fillBuffer() {
     if (loading) return;
-    if (selected.length === 0) return; // random-läge använder inte buffer
+    if (selected.length === 0) return;
     if (meals.length >= BUFFER_SIZE) return;
     if (cursor >= idPool.length) return;
-
     setLoading(true);
     try {
       const need = Math.min(BUFFER_SIZE - meals.length, idPool.length - cursor);
@@ -114,23 +100,19 @@ export default function App() {
     }
   }
 
-  // Fyll bufferten när pool/cursor ändras
   useEffect(() => {
     if (selected.length > 0) fillBuffer();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idPool, cursor, selected.length]);
 
-  // Flytta kortstacken framåt + fyll på enligt läge
   function advanceDeck() {
     setMeals((prev) => prev.slice(1));
     setTimeout(async () => {
       try {
         if (selected.length === 0) {
-          // RANDOM-LÄGE: hämta en ny random och append
           const m = await getRandomMeal();
           if (m) setMeals((prev) => [...prev, m]);
         } else {
-          // FILTER-LÄGE: fyll bufferten om det finns fler id:n
           await fillBuffer();
         }
       } catch (e) {
@@ -163,8 +145,37 @@ export default function App() {
     } 
   }
 
+  function handleLoginClick() {
+    alert("Login clicked!");
+    // här kan du istället navigera till en login-sida
+  }
+
   return (
     <div className="min-h-screen bg-gray-50">
+      {/* TOP BAR med logga + flikar */}
+      <header className="sticky top-0 z-50 bg-[#FFC0CB] border-b">
+        <div className="max-w-6xl mx-auto px-4 h-14 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <LogoBitematch />
+            <nav className="hidden md:flex items-center gap-1">
+              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">Om oss</button>
+              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">Kontakt</button>
+              <button className="px-3 py-1.5 rounded-lg hover:bg-pink-200">FAQ</button>
+            </nav>
+          </div>
+
+          {/* Höger: Log in-knapp */}
+          <div>
+            <button
+              onClick={handleLoginClick}
+              className="px-3 py-1.5 rounded-lg border hover:bg-pink-100"
+            >
+              Log in
+            </button>
+          </div>
+        </div>
+      </header>
+
       <main className="max-w-6xl mx-auto p-4">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch min-h-[640px]">
           {/* Vänster: Filter */}
@@ -182,7 +193,9 @@ export default function App() {
                   {err}
                 </div>
               )}
+
               <BrandOverCard />
+
               <AnimatePresence>
                 {meals.map((meal, i) => (
                   <MealCard
@@ -213,9 +226,7 @@ export default function App() {
 
           {/* Höger: Veckans matplan */}
           <div className="order-2 lg:order-3 lg:col-span-3 flex">
-            <div className="order-2 lg:order-3 lg:col-span-3 flex">
-              <ThisWeekPanel className="h-[640px] w-full" />
-            </div>
+            <ThisWeekPanel className="h-[640px] w-full" />
           </div>
         </div>
       </main>
